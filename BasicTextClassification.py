@@ -30,7 +30,7 @@ word_index["<UNUSED>"] = 3
 # reversing the initial dict such that integer will be key and words will be value
 revers_word_index = dict([(value, key) for (key, value) in word_index.items()])
 
-# Now getting trimming reviews of maximum of of length 250 and also called as pre-processing for making our data consistance for Nural Networks 
+# Now getting trimming reviews of maximum of of length 250 and also called as pre-processing for making our data consistance for Nural Networks
 train_movie_data = keras.preprocessing.sequence.pad_sequences(
     train_movie_data, value=word_index["<PAD>"], padding="post", maxlen=250)
 
@@ -49,3 +49,15 @@ def decode_review(text):
 # print(len(test_movie_data[0]), len(test_movie_data[1]))
 
 
+# model
+'''
+Setting up the layers
+Sequential groups a linear stack of layers into a tf.keras.Model 
+Since, the final output is just binary value type either positive or negative so the last layer will have only single node
+'''
+model = keras.Sequential()
+# this layer will group words of similar kind using word vectors
+model.add(keras.layers.Embedding(10000, 16))
+model.add(keras.layers.GlobalAveragePooling1D())
+model.add(keras.layers.Dense(16, activation="relu"))
+model.add(keras.layers.Dense(1, activation="sigmoid"))
