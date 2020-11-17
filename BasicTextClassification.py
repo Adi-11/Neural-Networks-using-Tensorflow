@@ -3,6 +3,7 @@ from tensorflow import keras
 import numpy as np
 from tensorflow.python.keras import activations
 from tensorflow.python.keras.engine.training import Model
+np.set_printoptions(suppress=True)
 
 
 # required data-set
@@ -60,4 +61,50 @@ model = keras.Sequential()
 model.add(keras.layers.Embedding(10000, 16))
 model.add(keras.layers.GlobalAveragePooling1D())
 model.add(keras.layers.Dense(16, activation="relu"))
+# This layer will give output between 0 and 1 thats what sigmoid function do....
 model.add(keras.layers.Dense(1, activation="sigmoid"))
+
+
+# Prints a string summary of the network.
+print(model.summary())
+
+'''
+Compile the model
+Before the model is ready for training, it needs a few more settings. These are added during the model's compile step:
+
+Loss function —This measures how accurate the model is during training. You want to minimize this function to "steer" the model in 
+the right direction.
+
+Optimizer —This is how the model is updated based on the data it sees and its loss function.
+
+Metrics —Used to monitor the training and testing steps. The following example uses accuracy, the fraction of the images that are correctly classified.
+'''
+
+model.compile(optimizer="adam", loss="binary_crossentropy",
+              metrics=["accuracy"])
+
+
+# getting the validation data to each the performance of the models based on the tunnings.
+x_val = train_movie_data[:10000]
+x_train = train_movie_data[10000:]
+
+y_val = train_label[:10000]
+y_train = train_label[10000:]
+
+
+fit_model = model.fit(x_train, y_train, epochs=40,
+                      batch_size=512, validation_data=(x_val, y_val), verbose=1)
+
+results = model.evaluate(test_movie_data, test_lebels)
+print(results)
+
+# prediction
+'''
+test_review = test_movie_data[0]
+predict = model.predict([[test_review]])
+print("Review: ")
+print(decode_review(test_review))
+print("Prediction: " + str(predict[0]))
+print("Actual: " + str(test_lebels[0]))
+print(results)
+'''
